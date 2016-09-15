@@ -8,9 +8,9 @@ import moment from 'moment';
 
 export default class Home extends Component {
   render() {
-    console.log('SwwwS');
+    // console.log('SwwwS');
     var parseDate = d3.timeParse("%m-%d-%Y");
-    console.log(moment);
+    // console.log(moment);
         var dataArea=[];
 
         for(var i=0,j=0;i<15;++i,++j){
@@ -32,7 +32,7 @@ export default class Home extends Component {
             dataArea[i]=d;
         }
 
-        console.log(JSON.stringify(dataArea));
+        // console.log(JSON.stringify(dataArea));
 
         var margin={
             top: 20, right: 30, bottom: 20, left: 50
@@ -40,19 +40,20 @@ export default class Home extends Component {
 
 
         return(
-            <div >
-                        <Chart data={dataArea} xData="date" yData="count" type="type" margin={margin}
-                                         yMaxBuffer={10} id="multi-area-chart" interpolations="cardinal" width={1500}>
-                            {/* <yGrid orient="left" className="y-grid" ticks={5}/>
-                            <xAxis orient="bottom" className="axis" tickFormat="%d/%m" ticks={4}/>
-                            <yAxis orient="left" className="axis" ticks={5}/> */}
-                            <area className="area" fill="#ca6f96" value="C"/>
-                            <area className="area" fill="#53c79f" value="B"/>
-                          <arra className="area" fill="#e58c72" value="A"/>
-
-                        </Chart>
-
-
+            <div className="row">
+              <div className="col-md-6">
+              <Chart data={dataArea} xData="date" yData="count" type="type" margin={margin}
+                               yMaxBuffer={10} id="multi-area-chart" interpolations="cardinal"  width={500} height={300}>
+                  <yGrid orient="left" className="y-grid" ticks={5}/>
+                  <xAxis orient="bottom" className="axis" tickFormat="%d/%m" ticks={4}/>
+                  <yAxis orient="left" className="axis" ticks={5}/>
+                <avLine className='av-line'/>
+                  {/* <area className="area" fill="#ca6f96" value="C"/> */}
+                  {/* <area className="area" fill="#53c79f" value="B"/>
+                <area className="area" fill="#e58c72" value="A"/> */}
+              </Chart>
+              </div>
+              <div className="col-md-6"></div>
             </div>
         );
       }

@@ -3,14 +3,40 @@ import ReactDOM from 'react-dom'
 import * as d3 from "d3";
 import Axis from './Axis.js'
 import Grid from './Grid.js'
+import MainLine from './MainLine.js'
+//
 
-export var resizeMixin = ComposedComponent => class extends React.Component {
+class Chart extends Component {
+  // constructor(props, context) {
+  //     super(props, context);
+  //     // this.state = {
+  //     //   width:500
+  //     // };
+  // }
+  state ={
+    width:500,
+    height: 300,
+  };
+
+  static propTypes= {
+        width:React.PropTypes.number,
+        height:React.PropTypes.number,
+        chartId:React.PropTypes.string,
+        interpolations:React.PropTypes.string,
+        data:React.PropTypes.array.isRequired,
+        xData:React.PropTypes.string.isRequired,
+        yData:React.PropTypes.string.isRequired,
+        margin:React.PropTypes.object,
+        yMaxBuffer:React.PropTypes.number
+    };
+
     componentWillMount(){
         d3.select(window).on('resize', (e) => {
             this.updateSize();
         });
 
-        this.setState({width:this.props.width});
+        this.setState({width:this.props.width,
+                        height:this.props.height,});
 
     }
     componentDidMount() {
@@ -23,54 +49,23 @@ export var resizeMixin = ComposedComponent => class extends React.Component {
     updateSize(){
         var node = ReactDOM.findDOMNode(this);
         var parentWidth=parseInt(d3.select(node).style('width'));
-
-        if(parentWidth<this.props.width){
-            this.setState({width:parentWidth-20});
+        var bodyHeight=parseInt(window.innerHeight);
+        // console.log([parentWidth,this.props.width]);
+        // console.log("J:  "+bodyHeight)
+        if(parentWidth>this.props.width){
+          // console.log('OK');
+          // console.log({width:parentWidth-20});
+            this.setState({width:parentWidth-20,
+                            height:parseInt(bodyHeight/2)-20});
         }else{
-            this.setState({width:this.props.width});
+          // console.log('OK2');
+            this.setState({width:this.props.width,
+                            height:parseInt(bodyHeight/2)-20});
         }
     }
-    render() {
-       return <ComposedComponent {...this.props} {...this.state} />;
-    }
-};
-
-class Chart extends Component {
-  constructor(props, context) {
-      super(props, context);
-      this.state = {
-        width:500
-      };
-  }
-
-  static propTypes: {
-        width:React.PropTypes.number,
-        height:React.PropTypes.number,
-        chartId:React.PropTypes.string,
-        interpolations:React.PropTypes.string,
-        data:React.PropTypes.array.isRequired,
-        xData:React.PropTypes.string.isRequired,
-        yData:React.PropTypes.string.isRequired,
-        margin:React.PropTypes.object,
-        yMaxBuffer:React.PropTypes.number
-    };
-
-    static defaultProps ={
-                width: 800,
-                height: 300,
-                chartId: 'v1_chart',
-                interpolations:'linear',
-                margin:{
-                    top: 5, right: 5, bottom: 5, left: 5
-                },
-                yMaxBuffer:10
-        };
-
-
         createChart(_self){
-          console.log(this.state);
             this.w = this.state.width - (this.props.margin.left + this.props.margin.right);
-            this.h = this.props.height - (this.props.margin.top + this.props.margin.bottom);
+            this.h = this.state.height - (this.props.margin.top + this.props.margin.bottom);
 
             this.xScale = d3.scaleTime()
                 .domain(d3.extent(this.props.data, function (d) {
@@ -84,8 +79,6 @@ class Chart extends Component {
                 })])
                 .range([this.h, 0]);
 
-
-
             this.area = d3.area()
                 .x((d) => {
                     return this.xScale(d[this.props.xData]);
@@ -94,17 +87,6 @@ class Chart extends Component {
                 .y1((d)=> {
                     return this.yScale(d[this.props.yData]);
                 }).curve(d3.curveCardinal.tension(0.5));
-
-
-            var interpolations = [
-                "linear",
-                "step-before",
-                "step-after",
-                "basis",
-                "basis-closed",
-                "cardinal",
-                "cardinal-closed"];
-
 
             this.transform='translate(' + this.props.margin.left + ',' + this.props.margin.top + ')';
         }
@@ -136,14 +118,24 @@ class Chart extends Component {
                     var data=[];
 
                     for(var k=0,j=0;k<this.props.data.length;++k){
-                        if(this.props.data[k][_self.props.type]===element.props.value){
+                        if(this.props.data[k][this.props.type]===element.props.value){
                             data[j]=this.props.data[k];
                             ++j;
                         }
                     }
-                    object=<path className={element.props.className} d={this.area(data)} key={i} fill={element.props.fill}/>;
+                    object=<path className={element.props.className} d={this.area(data)} key={i} fill={element.props.fill} fillOpacity='0.8' strokeWidth="2" />;
                     break;
+                  case 'avLine':
+                  var data=[];
 
+                  for(var k=0,j=0;k<this.props.data.length;++k){
+                      if(this.props.data[k][this.props.type]==='B'){
+                          data[j]=this.props.data[k];
+                          ++j;
+                      }
+                  }
+                    object=<MainLine data={data} key={i} xScale={this.xScale} yScale={this.yScale} {...this.props} {...element.props}/>
+                  break
 
             }
             return object;
@@ -155,8 +147,8 @@ class Chart extends Component {
 
             if(this.props.children!=null) {
                 if (Array.isArray(this.props.children)) {
-                    elements=this.props.children.map(function(element,i){
-                        return _self.createElements(element,i)
+                    elements=this.props.children.map((element,i)=>{
+                        return this.createElements(element,i)
                     });
                 }else{
                     elements=this.createElements(this.props.children,0)
@@ -165,7 +157,7 @@ class Chart extends Component {
 
             return (
                 <div>
-                    <svg id={this.props.chartId} width={this.state.width} height={this.props.height}>
+                    <svg id={this.props.chartId} width={this.state.width} height={this.state.height}>
 
                         <g transform={this.transform}>
                             {elements}
@@ -176,4 +168,16 @@ class Chart extends Component {
         }
 }
 
-export default resizeMixin(Chart);
+Chart.defaultProps ={
+                width: 800,
+                height: 300,
+                chartId: 'v1_chart',
+                interpolations:'linear',
+                margin:{
+                    top: 5, right: 5, bottom: 5, left: 5
+                },
+                yMaxBuffer:10
+        };
+
+
+export default Chart;

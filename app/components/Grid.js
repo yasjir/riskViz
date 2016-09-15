@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom'
 import * as d3 from "d3";
 
 class Grid extends Component {
@@ -15,12 +16,24 @@ class Grid extends Component {
   componentDidUpdate () { this.renderGrid(); }
   componentDidMount () { this.renderGrid(); }
   renderGrid () {
-
-        this.grid = d3.axis()
-              .scale(this.props.scale)
-              .orient(this.props.orient)
-              .ticks(this.props.ticks)
-              .tickSize(-this.props.len, 0, 0)
+    var axis = null;
+    switch (this.props.orient) {
+      case 'left':
+       axis = d3.axisLeft;
+       break;
+      case 'right':
+        axis = d3.axisRight;
+        break;
+      case 'top':
+        axis = d3.axisTop;
+        break;
+      case 'bottom':
+        axis = d3.axisBottom;
+        break;
+    }
+        this.grid = axis(this.props.scale)
+              .tickArguments(this.props.ticks)
+              .tickSize(-this.props.len)
               .tickFormat("");
 
           var node = ReactDOM.findDOMNode(this);

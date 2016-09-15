@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom'
 import * as d3 from "d3";
 
 class Axis extends Component {
@@ -14,14 +15,26 @@ class Axis extends Component {
   componentDidUpdate() { this.renderAxis(); }
   componentDidMount() { this.renderAxis(); }
   renderAxis() {
-       var _self=this;
-       this.axis = d3.axis()
-            .scale(this.props.scale)
-            .orient(this.props.orient)
-            .ticks(this.props.ticks);
+       var axis = null;
+       switch (this.props.orient) {
+         case 'left':
+          axis = d3.axisLeft;
+          break;
+         case 'right':
+           axis = d3.axisRight;
+           break;
+         case 'top':
+           axis = d3.axisTop;
+           break;
+         case 'bottom':
+           axis = d3.axisBottom;
+           break;
+       }
+       this.axis = axis(this.props.scale)
+                    .tickArguments(this.props.ticks);
 
         if(this.props.tickFormat!=null && this.props.axisType==='x')
-            this.axis.tickFormat(d3.time.format(this.props.tickFormat));
+            this.axis.tickFormat(d3.timeFormat(this.props.tickFormat));
 
         var node = ReactDOM.findDOMNode(this);
         d3.select(node).call(this.axis);
