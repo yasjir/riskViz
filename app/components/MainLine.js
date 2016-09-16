@@ -15,21 +15,21 @@ class MainLine extends Component {
     className:'average-line',
     stroke:'#000000'
   }
+  componentWillMount() {this.renderLine()}
   componentDidUpdate() { this.renderLine(); }
-  componentDidMount() { this.renderLine(); }
+  // componentDidMount() { this.renderLine(); }
   renderLine(){
     this.line = d3.line()
-                    .x((d)=>{return  this.props.xScale(d.date)})
-                    .y((d)=>{return  this.props.yScale(d.count)})
-                    .curve(d3.curveCardinal.tension(0.5));
-    this.xy=this.line(this.props.data)
+                    .x((d)=>{return this.props.xScale(d.date)})
+                    .y((d)=>{return this.props.yScale(d.count)});
+                    // .curve(d3.curveCardinal.tension(0.5));
   }
 
   render(){
-    console.log(this.props.data);
-    console.log(this.line(this.props.data));
+    // console.log(this.line([this.props.data[14]]));
+    // console.log(this.props.data);
     return (
-      <path className={this.props.className}  d={this.xt}  />
+      <path className={'line'}  d={this.line(this.props.data)}></path>
     )
   }
 }

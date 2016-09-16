@@ -4,7 +4,7 @@ export default {
   module: {
     loaders: [{
       test: /\.jsx?$/,
-      loaders: ['babel-loader'],
+      loaders: ['babel-loader?retainLines=true'],
       exclude: /node_modules/
     }, {
       test: /\.json$/,
@@ -24,6 +24,7 @@ export default {
 
   ],
   externals: [
+    "sqlite3",
     // put your node 3rd party libraries which can't be built with webpack here
     // (mysql, mongodb, and so on..)
   ]

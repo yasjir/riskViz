@@ -1,6 +1,6 @@
 body {
   position: relative;
-  color: white;
+  /*color: white;*/
   height: 100vh;
   /*background-color: #232C39;
   background-image: linear-gradient(45deg, rgba(0, 216, 255, .5) 10%, rgba(0, 1, 127, .7));*/
@@ -33,5 +33,10 @@ a {
 a:hover {
   opacity: 1;
   text-decoration: none;
+  cursor: pointer;
+}
+
+rect:hover{
+  opacity: 0.5;
   cursor: pointer;
 }

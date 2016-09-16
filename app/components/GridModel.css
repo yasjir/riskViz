@@ -1,0 +1,8 @@
+.gridModel{
+  padding: 20px;
+  /*max-height: 500;*/
+}
+
+.gridModel svg{
+  max-height: 450px;
+}

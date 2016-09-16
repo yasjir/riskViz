@@ -68,14 +68,14 @@ class Chart extends Component {
             this.h = this.state.height - (this.props.margin.top + this.props.margin.bottom);
 
             this.xScale = d3.scaleTime()
-                .domain(d3.extent(this.props.data, function (d) {
-                    return d[_self.props.xData];
+                .domain(d3.extent(this.props.data, (d) => {
+                    return d[this.props.xData];
                 }))
                 .rangeRound([0, this.w]);
 
             this.yScale = d3.scaleLinear()
-                .domain([0,d3.max(this.props.data,function(d){
-                    return d[_self.props.yData]+_self.props.yMaxBuffer;
+                .domain([0,d3.max(this.props.data,(d)=>{
+                    return d[this.props.yData]+this.props.yMaxBuffer;
                 })])
                 .range([this.h, 0]);
 
@@ -125,17 +125,15 @@ class Chart extends Component {
                     }
                     object=<path className={element.props.className} d={this.area(data)} key={i} fill={element.props.fill} fillOpacity='0.8' strokeWidth="2" />;
                     break;
-                  case 'avLine':
-                  var data=[];
-
-                  for(var k=0,j=0;k<this.props.data.length;++k){
-                      if(this.props.data[k][this.props.type]==='B'){
-                          data[j]=this.props.data[k];
-                          ++j;
+                case 'avLine':
+                    data=this.props.data.filter((d,i)=>{
+                      if(d.type==='B'){
+                        return d;
                       }
-                  }
-                    object=<MainLine data={data} key={i} xScale={this.xScale} yScale={this.yScale} {...this.props} {...element.props}/>
-                  break
+                    });
+                    // console.log(this.data)
+                    object=<MainLine data={data} key={i} xScale={this.xScale} yScale={this.yScale}  {...element.props}/>
+                    break;
 
             }
             return object;
